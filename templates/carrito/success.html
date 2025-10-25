@@ -1,0 +1,7 @@
+<!-- success.html -->
+{% extends "carrito/base.html" %}
+{% block content %}
+<h1>¡Gracias por tu compra!</h1>
+<p>Número de orden: <strong>{{ orden.id }}</strong></p>
+<a class="btn btn-primary" href="{% url 'carrito:home' %}">Volver a la tienda</a>
+{% endblock %}

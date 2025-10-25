@@ -1,0 +1,9 @@
+<!-- checkout.html -->
+{% extends "carrito/base.html" %}
+{% block content %}
+<h1>Checkout</h1>
+<p>Total a pagar: <strong>${{ cart.total }}</strong></p>
+<form method="post">{% csrf_token %}
+  <button class="btn btn-success">Confirmar compra</button>
+</form>
+{% endblock %}

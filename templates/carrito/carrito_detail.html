@@ -1,0 +1,31 @@
+{% extends "carrito/base.html" %}
+{% block content %}
+<h1>Carrito</h1>
+<table class="table align-middle">
+  <thead><tr><th>Producto</th><th>Cant.</th><th>Total</th><th></th></tr></thead>
+  <tbody>
+  {% for item in cart %}
+    <tr>
+      <td><a href="{{ item.producto.get_absolute_url }}">{{ item.producto.nombre }}</a></td>
+      <td>{{ item.cantidad }}</td>
+      <td>${{ item.total }}</td>
+      <td>
+        <form method="post" action="{% url 'carrito:carrito-quitar' item.producto.slug %}">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-outline-danger">Quitar</button>
+        </form>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4" class="text-muted">Tu carrito está vacío</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="d-flex justify-content-between">
+  <a class="btn btn-outline-secondary" href="{% url 'carrito:home' %}">Seguir comprando</a>
+  <div>
+    <strong class="me-3">Total: ${{ cart.total }}</strong>
+    <a class="btn btn-primary" href="{% url 'carrito:checkout' %}">Checkout</a>
+  </div>
+</div>
+{% endblock %}

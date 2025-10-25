@@ -1,0 +1,23 @@
+{% extends "carrito/base.html" %}
+{% block title %}Productos · Marti{% endblock %}
+{% block content %}
+<h1 class="mb-3">Productos</h1>
+<div class="row g-3">
+  {% for p in object_list %}
+  <div class="col-12 col-md-4">
+    <div class="card h-100">
+      {% if p.imagen %}
+  <img src="{{ p.imagen.url }}" class="card-img-top" alt="{{ p.nombre }}">
+{% endif %}
+<div class="card-body">
+  <h5 class="card-title">{{ p.nombre }}</h5>
+  <p class="text-muted mb-2">${{ p.precio }}</p>
+  <a class="btn btn-primary" href="{{ p.get_absolute_url }}">Ver</a>
+</div>
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-muted">No hay productos.</p>
+  {% endfor %}
+</div>
+{% endblock %}

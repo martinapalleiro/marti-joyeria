@@ -1,9 +1,29 @@
-<!-- checkout.html -->
 {% extends "carrito/base.html" %}
 {% block content %}
-<h1>Checkout</h1>
-<p>Total a pagar: <strong>${{ cart.total }}</strong></p>
-<form method="post">{% csrf_token %}
-  <button class="btn btn-success">Confirmar compra</button>
-</form>
+
+<div class="row justify-content-center">
+  <div class="col-lg-6 col-md-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center py-4">
+        <h1 class="h4 mb-4">Confirmar compra</h1>
+
+        <div class="alert alert-info">
+          <strong>Total a pagar:</strong> ${{ cart.total }}
+        </div>
+
+        <form method="post" class="mt-4">
+          {% csrf_token %}
+          <button class="btn btn-success btn-lg px-4">💎 Confirmar compra</button>
+        </form>
+
+        <div class="mt-4">
+          <a href="{% url 'carrito:carrito-detalle' %}" class="text-decoration-none">
+            ← Volver al carrito
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

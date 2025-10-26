@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from .models import Producto, Orden, OrdenItem
 from .cart import Cart
 from .forms import AgregarAlCarritoForm
@@ -36,20 +37,33 @@ class CarritoQuitarView(View):
         Cart(request).remove(producto.id)
         return redirect("carrito:carrito-detalle")
 
+class SuccessView(TemplateView):
+    template_name = "carrito/success.html"
+
 class CheckoutView(LoginRequiredMixin, View):
     login_url = "/admin/login/"
     def get(self, request):
         return render(request, "carrito/checkout.html", {"cart": Cart(request)})
+
     def post(self, request):
         cart = Cart(request)
-        # si está vacío, volver
-        if not any(True for _ in cart):
+        if len(cart) == 0:
             return redirect("carrito:carrito-detalle")
-        orden = Orden.objects.create(usuario=request.user, total=cart.total())
-        for item in cart:
-            OrdenItem.objects.create(
-                orden=orden, producto=item["producto"],
-                cantidad=item["cantidad"], precio=item["producto"].precio
+
+        with transaction.atomic():
+            orden = Orden.objects.create(
+                usuario=request.user,
+                total=cart.total  # <- SIN paréntesis
             )
-        cart.clear()
-        return render(request, "carrito/success.html", {"orden": orden})
+            for item in cart:
+                OrdenItem.objects.create(
+                    orden=orden,
+                    producto=item["producto"],
+                    cantidad=item["cantidad"],
+                    precio=item["producto"].precio,
+                )
+            cart.clear()
+        return redirect("carrito:success")
+
+class GraciasView(TemplateView):
+    template_name = "carrito/success.html"

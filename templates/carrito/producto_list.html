@@ -1,23 +1,85 @@
 {% extends "carrito/base.html" %}
 {% block title %}Productos · Marti{% endblock %}
 {% block content %}
-<h1 class="mb-3">Productos</h1>
-<div class="row g-3">
-  {% for p in object_list %}
-  <div class="col-12 col-md-4">
-    <div class="card h-100">
-      {% if p.imagen %}
-  <img src="{{ p.imagen.url }}" class="card-img-top" alt="{{ p.nombre }}">
-{% endif %}
-<div class="card-body">
-  <h5 class="card-title">{{ p.nombre }}</h5>
-  <p class="text-muted mb-2">${{ p.precio }}</p>
-  <a class="btn btn-primary" href="{{ p.get_absolute_url }}">Ver</a>
-</div>
+<div class="container py-4">
+  <h1 class="mb-4 text-center fw-bold"> Nuestros Productos </h1>
+
+  <!-- Grid responsive: 1 col (xs), 2 cols (sm), 3 cols (lg), 4 cols (xl) -->
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+    {% for p in object_list %}
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0 hover-lift">
+        {% if p.imagen %}
+          <img
+            src="{{ p.imagen.url }}"
+            alt="{{ p.nombre }}"
+            class="card-img-top img-fluid"
+            loading="lazy"
+            style="height: 220px; object-fit: cover;"
+          >
+        {% else %}
+          <img
+            src="https://via.placeholder.com/600x400?text=Sin+imagen"
+            alt="Sin imagen"
+            class="card-img-top img-fluid"
+            loading="lazy"
+            style="height: 220px; object-fit: cover;"
+          >
+        {% endif %}
+
+        <div class="card-body d-flex flex-column text-center">
+          <h5 class="card-title mb-2 fw-semibold">{{ p.nombre }}</h5>
+          <p class="text-muted mb-3 fs-6">${{ p.precio }}</p>
+          <div class="mt-auto">
+            <a href="{{ p.get_absolute_url }}" class="btn btn-outline-primary w-100">
+              <i class="bi bi-eye-fill me-1"></i> Ver detalle
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+      <p class="text-muted fs-5">No hay productos disponibles por el momento 🛍️</p>
+    </div>
+    {% endfor %}
   </div>
-  {% empty %}
-  <p class="text-muted">No hay productos.</p>
-  {% endfor %}
+
+  {# Paginación (si usás paginate_by en la ListView) #}
+  {% if is_paginated %}
+  <nav class="mt-4" aria-label="Paginación de productos">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+      {% endif %}
+
+      {% for i in paginator.page_range %}
+        {% if page_obj.number == i %}
+          <li class="page-item active" aria-current="page"><span class="page-link">{{ i }}</span></li>
+        {% elif i > page_obj.number|add:-3 and i < page_obj.number|add:3 %}
+          <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
 </div>
 {% endblock %}
+
+

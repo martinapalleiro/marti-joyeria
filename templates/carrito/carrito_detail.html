@@ -1,31 +1,115 @@
 {% extends "carrito/base.html" %}
 {% block content %}
-<h1>Carrito</h1>
-<table class="table align-middle">
-  <thead><tr><th>Producto</th><th>Cant.</th><th>Total</th><th></th></tr></thead>
-  <tbody>
-  {% for item in cart %}
-    <tr>
-      <td><a href="{{ item.producto.get_absolute_url }}">{{ item.producto.nombre }}</a></td>
-      <td>{{ item.cantidad }}</td>
-      <td>${{ item.total }}</td>
-      <td>
-        <form method="post" action="{% url 'carrito:carrito-quitar' item.producto.slug %}">
-          {% csrf_token %}
-          <button class="btn btn-sm btn-outline-danger">Quitar</button>
-        </form>
-      </td>
-    </tr>
-  {% empty %}
-    <tr><td colspan="4" class="text-muted">Tu carrito está vacío</td></tr>
-  {% endfor %}
-  </tbody>
-</table>
-<div class="d-flex justify-content-between">
-  <a class="btn btn-outline-secondary" href="{% url 'carrito:home' %}">Seguir comprando</a>
-  <div>
-    <strong class="me-3">Total: ${{ cart.total }}</strong>
-    <a class="btn btn-primary" href="{% url 'carrito:checkout' %}">Checkout</a>
+
+{% if cart.total == 0 %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-body text-center">
+      <p class="text-muted mb-3">Tu carrito está vacío</p>
+      <a class="btn btn-primary" href="{% url 'carrito:home' %}">Ir a comprar</a>
+    </div>
+  </div>
+{% else %}
+
+<div class="row g-4">
+  <!-- Items -->
+  <div class="col-lg-8">
+
+    <!-- Vista móvil: lista/cards -->
+    <div class="d-md-none">
+      <ul class="list-group shadow-sm">
+        {% for item in cart %}
+          <li class="list-group-item">
+            <div class="d-flex align-items-center">
+              {% if item.producto.imagen %}
+                <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="rounded me-3" style="width:64px;height:64px;object-fit:cover;">
+              {% endif %}
+              <div class="flex-grow-1">
+                <a href="{{ item.producto.get_absolute_url }}" class="fw-semibold text-decoration-none">{{ item.producto.nombre }}</a>
+                <div class="small text-muted">Cant.: {{ item.cantidad }}</div>
+              </div>
+              <div class="text-end">
+                <div class="fw-semibold">${{ item.total }}</div>
+                <form method="post" action="{% url 'carrito:carrito-quitar' item.producto.slug %}" class="mt-2">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-outline-danger">Quitar</button>
+                </form>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Vista md+ : tabla -->
+    <div class="card border-0 shadow-sm d-none d-md-block">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width:60%;">Producto</th>
+                <th class="text-center" style="width:10%;">Cant.</th>
+                <th class="text-end" style="width:20%;">Total</th>
+                <th class="text-end" style="width:10%;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in cart %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      {% if item.producto.imagen %}
+                        <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="rounded me-3" style="width:56px;height:56px;object-fit:cover;">
+                      {% endif %}
+                      <a href="{{ item.producto.get_absolute_url }}" class="fw-semibold text-decoration-none">{{ item.producto.nombre }}</a>
+                    </div>
+                  </td>
+                  <td class="text-center">{{ item.cantidad }}</td>
+                  <td class="text-end fw-semibold">${{ item.total }}</td>
+                  <td class="text-end">
+                    <form method="post" action="{% url 'carrito:carrito-quitar' item.producto.slug %}">
+                      {% csrf_token %}
+                      <button class="btn btn-sm btn-outline-danger">Quitar</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones bajo la lista/tabla en mobile -->
+    <div class="d-md-none mt-3 d-flex flex-column flex-sm-row gap-2">
+      <a class="btn btn-outline-secondary flex-fill" href="{% url 'carrito:home' %}">Seguir comprando</a>
+      <a class="btn btn-primary flex-fill" href="{% url 'carrito:checkout' %}">Ir al checkout</a>
+    </div>
+
+  </div>
+
+  <!-- Resumen -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm position-relative">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Resumen</h5>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Items</span>
+          <span>{{ cart|length }}</span>
+        </div>
+        <hr class="my-3">
+        <div class="d-flex justify-content-between mb-3">
+          <span class="fw-semibold">Total</span>
+          <span class="fw-bold fs-5">${{ cart.total }}</span>
+        </div>
+        <div class="d-grid gap-2">
+          <a class="btn btn-primary" href="{% url 'carrito:checkout' %}">Checkout</a>
+          <a class="btn btn-outline-secondary" href="{% url 'carrito:home' %}">Seguir comprando</a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+{% endif %}
 {% endblock %}

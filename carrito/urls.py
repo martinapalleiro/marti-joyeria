@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     ProductoListaView, ProductoDetalleView,
     CarritoDetalleView, CarritoAgregarView, CarritoQuitarView,
-    CheckoutView,
+    CheckoutView, SuccessView,
 )
 
 urlpatterns = [
@@ -12,4 +12,5 @@ urlpatterns = [
     path("carrito/add/<slug:slug>/",   CarritoAgregarView.as_view(), name="carrito-agregar"),
     path("carrito/remove/<slug:slug>/",CarritoQuitarView.as_view(),  name="carrito-quitar"),
     path("checkout/",   CheckoutView.as_view(),        name="checkout"),
+    path("success/", SuccessView.as_view(), name="success"),
 ]

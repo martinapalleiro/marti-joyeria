@@ -26,6 +26,7 @@ class Cart:
 
     def clear(self):
         self.session[self.SESSION_KEY] = {}
+        self.cart = self.session[self.SESSION_KEY]
         self.save()
 
     def save(self):
@@ -35,10 +36,33 @@ class Cart:
         productos = Producto.objects.filter(id__in=self.cart.keys())
         for p in productos:
             qty = self.cart[str(p.id)]["qty"]
-            yield {"producto": p, "cantidad": qty, "total": p.precio * qty}
+            yield {
+                "producto": p,
+                "cantidad": qty,
+                "total": p.precio * qty,  # Decimal esperado
+            }
 
-    def total(self):
+    # ====== NUEVO: contadores y total como property ======
+    @property
+    def items_count(self) -> int:
+        """Cantidad total de unidades (sumatoria de qty)."""
+        return sum(item["qty"] for item in self.cart.values())
+
+    @property
+    def lines_count(self) -> int:
+        """Cantidad de líneas distintas (productos distintos)."""
+        return len(self.cart)
+
+    def __len__(self) -> int:
+        """Permite usar {{ cart|length }} en templates."""
+        return self.items_count
+
+    @property
+    def total(self) -> Decimal:
+        """Total del carrito como Decimal."""
         total = Decimal("0")
+        if not self.cart:
+            return total
         for p in Producto.objects.filter(id__in=self.cart.keys()):
             total += p.precio * self.cart[str(p.id)]["qty"]
         return total

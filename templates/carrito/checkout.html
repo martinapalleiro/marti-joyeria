@@ -7,13 +7,38 @@
       <div class="card-body text-center py-4">
         <h1 class="h4 mb-4">Confirmar compra</h1>
 
+        {% if cart|length > 0 %}
+          <div class="table-responsive mb-3">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th class="text-center">Cant.</th>
+                  <th class="text-end">Precio</th>
+                  <th class="text-end">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in cart %}
+                  <tr>
+                    <td>{{ item.producto.nombre }}</td>
+                    <td class="text-center">{{ item.cantidad }}</td>
+                    <td class="text-end">${{ item.producto.precio }}</td>
+                    <td class="text-end">${{ item.subtotal }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
         <div class="alert alert-info">
           <strong>Total a pagar:</strong> ${{ cart.total }}
         </div>
 
         <form method="post" class="mt-4">
           {% csrf_token %}
-          <button class="btn btn-success btn-lg px-4">💎 Confirmar compra</button>
+          <button class="btn btn-success btn-lg px-4"> Confirmar compra</button>
         </form>
 
         <div class="mt-4">

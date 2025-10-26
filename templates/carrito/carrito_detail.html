@@ -1,7 +1,7 @@
 {% extends "carrito/base.html" %}
 {% block content %}
 
-{% if cart.total == 0 %}
+{% if cart|length == 0 %}
   <div class="card border-0 shadow-sm">
     <div class="card-body text-center">
       <p class="text-muted mb-3">Tu carrito está vacío</p>
@@ -28,7 +28,10 @@
                 <div class="small text-muted">Cant.: {{ item.cantidad }}</div>
               </div>
               <div class="text-end">
-                <div class="fw-semibold">${{ item.total }}</div>
+                <div class="fw-semibold">${{ item.subtotal }}</div>
+                {% if not item.valido %}
+                  <div class="small text-danger">Disponible: {{ item.stock_disponible }}</div>
+                {% endif %}
                 <form method="post" action="{% url 'carrito:carrito-quitar' item.producto.slug %}" class="mt-2">
                   {% csrf_token %}
                   <button class="btn btn-sm btn-outline-danger">Quitar</button>
@@ -55,17 +58,22 @@
             </thead>
             <tbody>
               {% for item in cart %}
-                <tr>
+                <tr {% if not item.valido %}class="table-warning"{% endif %}>
                   <td>
                     <div class="d-flex align-items-center">
                       {% if item.producto.imagen %}
                         <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="rounded me-3" style="width:56px;height:56px;object-fit:cover;">
                       {% endif %}
-                      <a href="{{ item.producto.get_absolute_url }}" class="fw-semibold text-decoration-none">{{ item.producto.nombre }}</a>
+                      <div>
+                        <a href="{{ item.producto.get_absolute_url }}" class="fw-semibold text-decoration-none">{{ item.producto.nombre }}</a>
+                        {% if not item.valido %}
+                          <div class="small text-danger">Disponible: {{ item.stock_disponible }}</div>
+                        {% endif %}
+                      </div>
                     </div>
                   </td>
                   <td class="text-center">{{ item.cantidad }}</td>
-                  <td class="text-end fw-semibold">${{ item.total }}</td>
+                  <td class="text-end fw-semibold">${{ item.subtotal }}</td>
                   <td class="text-end">
                     <form method="post" action="{% url 'carrito:carrito-quitar' item.producto.slug %}">
                       {% csrf_token %}
@@ -79,6 +87,15 @@
         </div>
       </div>
     </div>
+
+    {% if not cart_valido %}
+      <div class="alert alert-warning my-3">
+        <strong>Atención:</strong> Algunos productos exceden el stock disponible.<br>
+        {% for msg in cart_problemas %}
+          • {{ msg }}<br>
+        {% endfor %}
+      </div>
+    {% endif %}
 
     <!-- Acciones bajo la lista/tabla en mobile -->
     <div class="d-md-none mt-3 d-flex flex-column flex-sm-row gap-2">

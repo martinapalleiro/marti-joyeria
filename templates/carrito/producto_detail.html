@@ -3,24 +3,38 @@
 {% block content %}
 <div class="card mx-auto shadow-sm" style="max-width: 400px;">
   {% if object.imagen %}
-    <img src="{{ object.imagen.url }}" 
-         class="card-img-top img-fluid" 
-         alt="{{ object.nombre }}" 
+    <img src="{{ object.imagen.url }}"
+         class="card-img-top img-fluid"
+         alt="{{ object.nombre }}"
          style="max-height: 300px; object-fit: cover;">
   {% endif %}
   <div class="card-body text-center">
     <h5 class="card-title">{{ object.nombre }}</h5>
     <p class="card-text lead mb-2">${{ object.precio }}</p>
-    <p class="card-text small text-muted">{{ object.descripcion }}</p>
 
-    <form method="post" action="{% url 'carrito:carrito-agregar' object.slug %}">
-      {% csrf_token %}
-      <div class="d-flex justify-content-center align-items-center mt-3 gap-2">
-        <input type="number" name="cantidad" min="1" value="1" class="form-control w-auto text-center">
-        <button class="btn btn-success">Agregar</button>
-      </div>
-    </form>
+    <p class="card-text small {% if object.stock > 0 %}text-muted{% else %}text-danger{% endif %}">
+      {% if object.stock > 0 %}
+        Stock disponible: <strong>{{ object.stock }}</strong>
+      {% else %}
+        Sin stock
+      {% endif %}
+    </p>
+
+    {% if object.stock > 0 %}
+      <form method="post" action="{% url 'carrito:carrito-agregar' object.slug %}">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center align-items-center mt-3 gap-2">
+          {{ form.cantidad }}
+          <button class="btn btn-success">Agregar</button>
+        </div>
+      </form>
+    {% else %}
+      <button class="btn btn-secondary" disabled>Sin stock</button>
+    {% endif %}
+
+    <p class="card-text small text-muted mt-3">{{ object.descripcion }}</p>
   </div>
 </div>
 {% endblock %}
+
 

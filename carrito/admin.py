@@ -19,12 +19,12 @@ class OrdenItemInline(admin.TabularInline):
 
 @admin.register(Orden)
 class OrdenAdmin(admin.ModelAdmin):
-    list_display = ("id", "usuario", "estado", "total", "creado")
-    list_filter = ("estado", "creado")
+    list_display = ("id", "nombre", "apellido", "dni", "metodo_pago", "estado", "total", "creado")
+    list_filter = ("estado", "metodo_pago", "creado")
     inlines = [OrdenItemInline]
     readonly_fields = ("total", "creado", "estado")
     date_hierarchy = "creado"
-    search_fields = ("usuario__username",)
+    search_fields = ("nombre", "apellido", "dni", "usuario__username")
     ordering = ("-creado",)
 
 

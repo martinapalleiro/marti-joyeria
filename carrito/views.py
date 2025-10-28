@@ -1,13 +1,12 @@
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from .models import Producto, Orden, OrdenItem
 from .cart import Cart, StockInsuficienteError
-from .forms import AgregarAlCarritoForm
+from .forms import AgregarAlCarritoForm, OrdenForm
 
 
 class ProductoListaView(ListView):
@@ -69,21 +68,36 @@ class CarritoQuitarView(View):
         return redirect("carrito:carrito-detalle")
 
 
-class SuccessView(TemplateView):
+# Antes: SuccessView simple. Ahora: mostramos datos de la orden.
+class CheckoutSuccessView(TemplateView):
     template_name = "carrito/success.html"
 
+    def get(self, request, pk):
+        orden = get_object_or_404(Orden, pk=pk)
+        return render(request, self.template_name, {"orden": orden})
 
-class CheckoutView(LoginRequiredMixin, View):
-    login_url = "/admin/login/"
+
+class CheckoutView(View):
+    """
+    GET: muestra resumen + formulario con datos del comprador.
+    POST: valida form, crea orden + items, confirma (descuenta stock) y redirige a success/<pk>/.
+    """
 
     def get(self, request):
         cart = Cart(request)
+        if len(cart) == 0:
+            messages.info(request, "Tu carrito está vacío.")
+            return redirect("carrito:carrito-detalle")
+
         ok, problemas = cart.validar_stock_actual()
         if not ok:
-            # Informar al usuario antes de mostrar el checkout
             for p in problemas:
                 messages.warning(request, p)
-        return render(request, "carrito/checkout.html", {"cart": cart})
+
+        # Prefill si está logueado y tenés datos (opcional)
+        initial = {}
+        form = OrdenForm(initial=initial)
+        return render(request, "carrito/checkout.html", {"cart": cart, "form": form})
 
     def post(self, request):
         cart = Cart(request)
@@ -91,10 +105,9 @@ class CheckoutView(LoginRequiredMixin, View):
             messages.info(request, "Tu carrito está vacío.")
             return redirect("carrito:carrito-detalle")
 
-        # Validación previa contra stock actual
         ok, problemas = cart.validar_stock_actual()
         if not ok:
-            # Ajustar automáticamente al máximo disponible y avisar
+            # Ajuste automático para no romper
             ajustes = cart.asegurar_maximo_disponible()
             for p in problemas:
                 messages.error(request, p)
@@ -102,10 +115,20 @@ class CheckoutView(LoginRequiredMixin, View):
                 messages.warning(request, a)
             return redirect("carrito:carrito-detalle")
 
-        # Crear orden + items y confirmar (descontar stock) de forma atómica
+        form = OrdenForm(request.POST)
+        if not form.is_valid():
+            messages.error(request, "Revisá los datos del formulario.")
+            return render(request, "carrito/checkout.html", {"cart": cart, "form": form})
+
         try:
             with transaction.atomic():
-                orden = Orden.objects.create(usuario=request.user)  # estado = borrador por default
+                # Creamos la orden con los datos del comprador
+                orden: Orden = form.save(commit=False)
+                if request.user.is_authenticated:
+                    orden.usuario = request.user  # opcional
+                orden.save()
+
+                # Crear items
                 for item in cart:
                     OrdenItem.objects.create(
                         orden=orden,
@@ -113,16 +136,16 @@ class CheckoutView(LoginRequiredMixin, View):
                         cantidad=item["cantidad"],
                         precio=item["producto"].precio,
                     )
-                # Descuenta stock y calcula total/estado
+
+                # Confirmar (descuenta stock, calcula total y marca estado)
                 orden.confirmar()
 
-                # Si todo ok, limpiamos carrito
+                # Limpiar carrito
                 cart.clear()
 
             messages.success(request, f"¡Gracias por tu compra! Orden #{orden.id} confirmada.")
-            return redirect("carrito:success")
+            return redirect("carrito:success", pk=orden.pk)
 
         except ValidationError as e:
-            # Falta de stock detectada al confirmar (concurrencia, etc.)
             messages.error(request, e.message if hasattr(e, "message") else str(e))
             return redirect("carrito:carrito-detalle")

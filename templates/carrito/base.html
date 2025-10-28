@@ -5,17 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>{% block title %}Marti · Joyería{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      /* ==== Navbar glassy + estilos === */
+      .nav-glass {
+        background: linear-gradient(90deg, #111 0%, #1b1b1b 50%, #111 100%);
+        backdrop-filter: blur(6px);
+      }
+      .btn-ghost {
+        --bs-btn-color: #f8f9fa;
+        --bs-btn-border-color: rgba(255,255,255,.25);
+        --bs-btn-hover-bg: rgba(255,255,255,.1);
+        --bs-btn-hover-border-color: rgba(255,255,255,.35);
+      }
+      .brand-accent {
+        letter-spacing: .3px;
+      }
+      .cart-badge {
+        transform: translate(35%, -45%);
+      }
+      body {
+        background: #f8f9fa;
+      }
+    </style>
   </head>
+
   <body class="bg-light">
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark nav-glass sticky-top shadow-sm">
       <div class="container">
-        <a class="navbar-brand" href="{% url 'carrito:home' %}">Marti Joyería</a>
-        <div class="ms-auto">
-          <a class="btn btn-outline-light" href="{% url 'carrito:carrito-detalle' %}">Carrito</a>
-          <a class="btn btn-outline-light ms-2" href="/admin/">Admin</a>
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'carrito:home' %}">
+          <span class="fw-semibold brand-accent">Marti Joyería</span>
+        </a>
+
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Abrir navegación">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            
+            <li class="nav-item">
+              <a class="btn btn-outline-light btn-sm ms-lg-2" href="{% url 'carrito:carrito-detalle' %}">
+                🛒 Carrito
+                {% if cart and cart|length %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-success cart-badge">
+                    {{ cart|length }}
+                  </span>
+                {% endif %}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-outline-light btn-sm ms-lg-2" href="/admin/">
+                🛠️ Admin
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
+
+    <!-- Contenido principal -->
     <main class="container py-4">
       {% if messages %}
         {% for msg in messages %}
@@ -27,6 +77,9 @@
       {% endif %}
       {% block content %}{% endblock %}
     </main>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
+

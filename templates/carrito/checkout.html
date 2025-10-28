@@ -1,54 +1,133 @@
 {% extends "carrito/base.html" %}
 {% block content %}
 
-<div class="row justify-content-center">
-  <div class="col-lg-6 col-md-8">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body text-center py-4">
-        <h1 class="h4 mb-4">Confirmar compra</h1>
+<div class="container py-4">
 
-        {% if cart|length > 0 %}
-          <div class="table-responsive mb-3">
-            <table class="table table-sm align-middle">
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th class="text-center">Cant.</th>
-                  <th class="text-end">Precio</th>
-                  <th class="text-end">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for item in cart %}
-                  <tr>
-                    <td>{{ item.producto.nombre }}</td>
-                    <td class="text-center">{{ item.cantidad }}</td>
-                    <td class="text-end">${{ item.producto.precio }}</td>
-                    <td class="text-end">${{ item.subtotal }}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% endif %}
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h1 class="h4 mb-3">Datos del comprador</h1>
+          <p class="text-muted small mb-4">Completá tus datos para finalizar la compra.</p>
 
-        <div class="alert alert-info">
-          <strong>Total a pagar:</strong> ${{ cart.total }}
-        </div>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
 
-        <form method="post" class="mt-4">
-          {% csrf_token %}
-          <button class="btn btn-success btn-lg px-4"> Confirmar compra</button>
-        </form>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombre</label>
+                {{ form.nombre }}
+                <div class="invalid-feedback d-block">{{ form.nombre.errors }}</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Apellido</label>
+                {{ form.apellido }}
+                <div class="invalid-feedback d-block">{{ form.apellido.errors }}</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">DNI</label>
+                {{ form.dni }}
+                <div class="invalid-feedback d-block">{{ form.dni.errors }}</div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Dirección</label>
+                {{ form.direccion }}
+                <div class="invalid-feedback d-block">{{ form.direccion.errors }}</div>
+                <div class="form-text">Ej: Calle 123, Piso 4, Depto B — Ciudad</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Método de pago</label>
+                {{ form.metodo_pago }}
+                <div class="invalid-feedback d-block">{{ form.metodo_pago.errors }}</div>
+              </div>
+            </div>
 
-        <div class="mt-4">
-          <a href="{% url 'carrito:carrito-detalle' %}" class="text-decoration-none">
-            ← Volver al carrito
-          </a>
+            <div class="d-flex gap-2 mt-4">
+              <a href="{% url 'carrito:carrito-detalle' %}" class="btn btn-light border">
+                ← Volver al carrito
+              </a>
+              <button class="btn btn-success ms-auto px-4">
+                Finalizar compra
+              </button>
+            </div>
+          </form>
         </div>
       </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="position-sticky" style="top: 1.25rem;">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h5 mb-3">Resumen del pedido</h2>
+
+            {% if cart|length > 0 %}
+              <div class="table-responsive mb-3">
+                <table class="table table-sm align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th class="w-50">Producto</th>
+                      <th class="text-center">Cant.</th>
+                      <th class="text-end">Precio</th>
+                      <th class="text-end">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in cart %}
+                      <tr>
+                        <td class="py-3">
+                          <div class="d-flex align-items-center gap-2">
+                            {% if item.producto.imagen %}
+                              <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="rounded" style="width:40px;height:40px;object-fit:cover;">
+                            {% else %}
+                              <div class="bg-light rounded" style="width:40px;height:40px;"></div>
+                            {% endif %}
+                            <span class="small">{{ item.producto.nombre }}</span>
+                          </div>
+                        </td>
+                        <td class="text-center">{{ item.cantidad }}</td>
+                        <td class="text-end">${{ item.producto.precio }}</td>
+                        <td class="text-end fw-semibold">${{ item.subtotal }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr class="table-light">
+                      <td colspan="3" class="text-end fw-semibold">Total</td>
+                      <td class="text-end fw-bold">${{ cart.total }}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              
+            {% else %}
+              <p class="text-muted mb-0">Tu carrito está vacío.</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm mt-3">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-start gap-3">
+              <div class="rounded-circle bg-success-subtle" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;">
+                <span class="fw-bold">i</span>
+              </div>
+              <div class="small">
+                <div class="fw-semibold mb-1">Comprá con confianza</div>
+                <ul class="mb-0 ps-3">
+                  <li>Datos protegidos</li>
+                  <li>Confirmación inmediata</li>
+                  <li>Atención personalizada</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> 
     </div>
   </div>
 </div>
 
 {% endblock %}
+
+

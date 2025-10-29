@@ -174,7 +174,6 @@ class Cart:
                 "valido": valido,
             }
 
-    # --- Utilidades para validación en checkout ---
 
     def validar_stock_actual(self):
         """

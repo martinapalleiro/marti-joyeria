@@ -67,7 +67,9 @@
                       <div>
                         <a href="{{ item.producto.get_absolute_url }}" class="fw-semibold text-decoration-none">{{ item.producto.nombre }}</a>
                         {% if not item.valido %}
-                          <div class="small text-danger">Disponible: {{ item.stock_disponible }}</div>
+                          <span class="badge text-bg-warning-subtle border border-warning-subtle ms-1">
+                            Disponible: {{ item.stock_disponible }}
+                          </span>
                         {% endif %}
                       </div>
                     </div>
@@ -88,12 +90,21 @@
       </div>
     </div>
 
+    <!-- Cartel lindo de aviso -->
     {% if not cart_valido %}
-      <div class="alert alert-warning my-3">
-        <strong>Atención:</strong> Algunos productos exceden el stock disponible.<br>
-        {% for msg in cart_problemas %}
-          • {{ msg }}<br>
-        {% endfor %}
+      <div class="alert alert-warning alert-dismissible fade show shadow-sm my-3" role="alert">
+        <div class="d-flex">
+          <div class="me-2 mt-1"><i class="bi bi-exclamation-triangle-fill"></i></div>
+          <div>
+            <strong>Atención:</strong> Algunos productos exceden el stock disponible.
+            <ul class="mb-0 mt-2">
+              {% for msg in cart_problemas %}
+                <li>{{ msg }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
       </div>
     {% endif %}
 

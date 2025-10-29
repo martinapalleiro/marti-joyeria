@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
-from django.core.exceptions import ValidationError
+from django.joyeria.exceptions import ValidationError
 from django.db import transaction
 
 from .models import Producto, Orden, OrdenItem

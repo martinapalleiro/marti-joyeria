@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.joyeria.exceptions import ValidationError
 from .models import Producto
 
 

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.db.models import F, Q, Sum, DecimalField
 from django.urls import reverse
-from django.joyeria.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=120)              # obligatorio

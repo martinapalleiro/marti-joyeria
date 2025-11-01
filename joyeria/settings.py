@@ -13,8 +13,6 @@ SECRET_KEY = os.getenv("SECRET_KEY", "change-me-in-production")
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]  # tu dominio de Render queda cubierto
 CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
 
-# TEMPLATES is defined later; set DIRS inside the TEMPLATES declaration below.
-
 MESSAGE_TAGS = {
     messages.DEBUG: "secondary",
     messages.INFO: "info",
@@ -48,26 +46,30 @@ ROOT_URLCONF = "joyeria.urls"
 
 TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",
-    "DIRS": [BASE_DIR / "templates"],   # si tenés /templates global, podés poner [BASE_DIR / "templates"]
+    "DIRS": [BASE_DIR / "templates"],
     "APP_DIRS": True,
     "OPTIONS": {"context_processors": [
         "django.template.context_processors.debug",
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
-    ],},
+    ]},
 }]
 
 WSGI_APPLICATION = "joyeria.wsgi.application"
 
-# DB: Postgres con DATABASE_URL o SQLite local
+# ----------------------------
+# BASE DE DATOS (SQLite persistente o Postgres si hay DATABASE_URL)
+# ----------------------------
+# Si estás en Render con Disk montado en /data, seteá SQLITE_PATH=/data/db.sqlite3
+# En local, al no tener esa env var, usa BASE_DIR/db.sqlite3
+DB_PATH = os.getenv("SQLITE_PATH", str(BASE_DIR / "db.sqlite3"))
+
 DATABASES = {
     "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        # En Render (Postgres) usually SSL es requerido; dj_database_url lo toma del URL.
-        # Si algo falla con SSL, probá quitar ssl_require o setearlo explícitamente True.
-        # ssl_require=True,
+        default=f"sqlite:///{DB_PATH}",  # SQLite por defecto (persistente en Render si usás /data)
+        conn_max_age=600,                # mantiene conexiones si usás Postgres
+        # ssl_require=True,              # habilitalo si tu DATABASE_URL lo necesita explícitamente
     )
 }
 
@@ -79,19 +81,19 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "es-ar"
-TIME_ZONE = "America/Argentina/Buenos_Aires"  # <- FIX
+TIME_ZONE = "America/Argentina/Buenos_Aires"
 USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# WhiteNoise: lo habitual es usar CompressedManifest en producción
 if DEBUG:
     STATICFILES_DIRS = [BASE_DIR / "static"]
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-else:
-    # TEST TEMPORAL: sin manifest para no romper si falta algún archivo
     STATICFILES_STORAGE = "whitenoise.storage.StaticFilesStorage"
+else:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -103,4 +105,3 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-

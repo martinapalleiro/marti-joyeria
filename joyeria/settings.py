@@ -13,6 +13,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "change-me-in-production")
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]  # tu dominio de Render queda cubierto
 CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
 
+# TEMPLATES is defined later; set DIRS inside the TEMPLATES declaration below.
+
 MESSAGE_TAGS = {
     messages.DEBUG: "secondary",
     messages.INFO: "info",
@@ -46,7 +48,7 @@ ROOT_URLCONF = "joyeria.urls"
 
 TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",
-    "DIRS": [],   # si tenés /templates global, podés poner [BASE_DIR / "templates"]
+    "DIRS": [BASE_DIR / "templates"],   # si tenés /templates global, podés poner [BASE_DIR / "templates"]
     "APP_DIRS": True,
     "OPTIONS": {"context_processors": [
         "django.template.context_processors.debug",

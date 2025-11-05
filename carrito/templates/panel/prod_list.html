@@ -31,6 +31,7 @@
           <td>${{ p.precio }}</td>
           <td>{{ p.stock }}</td>
           <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'panel:prod-preview' p.pk %}">Ver</a>
             <a class="btn btn-sm btn-secondary" href="{% url 'panel:prod-update' p.pk %}">Editar</a>
             <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:prod-delete' p.pk %}">Eliminar</a>
           </td>

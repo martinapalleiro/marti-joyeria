@@ -1,0 +1,11 @@
+{% extends "carrito/base.html" %}
+{% block title %}Sesión cerrada · Marti Joyería{% endblock %}
+{% block content %}
+<div class="d-flex flex-column justify-content-center align-items-center" style="min-height:70vh;">
+  <div class="card border-0 shadow-sm text-center p-4" style="max-width:400px; border-radius:1rem;">
+    <h1 class="h4 mb-3">👋 Cerraste sesión</h1>
+    <p class="text-muted mb-4">Gracias por visitar <strong>Marti Joyería</strong>.</p>
+    <a href="{% url 'login' %}" class="btn btn-dark px-4">Volver a iniciar sesión</a>
+  </div>
+</div>
+{% endblock %}

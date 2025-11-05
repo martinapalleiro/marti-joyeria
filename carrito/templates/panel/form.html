@@ -1,25 +1,116 @@
-{# templates/panel/form.html #}
 {% extends "carrito/base.html" %}
-{% block content %}
-<h1 class="h4 mb-3">{% if object %}Editar{% else %}Crear{% endif %}</h1>
+{% load static %}
 
-<form method="post" enctype="multipart/form-data" class="card border-0 shadow-sm">
-  <div class="card-body">
-    {% csrf_token %}
-    <div class="row g-3">
-      {% for field in form %}
-        <div class="col-md-6">
-          <label class="form-label">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-          {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors|striptags }}</div>{% endif %}
-        </div>
-      {% endfor %}
+{% block title %}
+{% if object %}Editar producto · Marti Joyería{% else %}Nuevo producto · Marti Joyería{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Encabezado -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h4 fw-semibold mb-1">
+        {% if object %} Editar producto{% else %}Nuevo producto{% endif %}
+      </h1>
+      <p class="text-muted mb-0">Completá los datos y guardá los cambios.</p>
     </div>
+    {% if object %}
+      <span class="badge rounded-pill text-bg-light border">ID: {{ object.pk }}</span>
+    {% endif %}
   </div>
-  <div class="card-footer bg-white d-flex justify-content-end gap-2">
-    <a class="btn btn-outline-secondary" href="javascript:history.back()">Cancelar</a>
-    <button class="btn btn-primary">Guardar</button>
-  </div>
-</form>
+
+  <!-- Formulario -->
+  <form method="post" enctype="multipart/form-data" class="card border-0 shadow-sm">
+    {% csrf_token %}
+
+    <div class="card-body p-4">
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger mb-4">
+          <strong>⚠️ Revisá los errores:</strong>
+          <ul class="mb-0 small">
+            {% for err in form.non_field_errors %}<li>{{ err }}</li>{% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <label for="{{ form.nombre.id_for_label }}" class="form-label fw-medium">Nombre</label>
+          {{ form.nombre }}
+          {% if form.nombre.errors %}<div class="invalid-feedback d-block small">{% for e in form.nombre.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label for="{{ form.slug.id_for_label }}" class="form-label fw-medium">Slug</label>
+          {{ form.slug }}
+          {% if form.slug.errors %}<div class="invalid-feedback d-block small">{% for e in form.slug.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <div class="col-12">
+          <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-medium">Descripción</label>
+          {{ form.descripcion }}
+          {% if form.descripcion.errors %}<div class="invalid-feedback d-block small">{% for e in form.descripcion.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label for="{{ form.precio.id_for_label }}" class="form-label fw-medium">Precio</label>
+          {{ form.precio }}
+          {% if form.precio.errors %}<div class="invalid-feedback d-block small">{% for e in form.precio.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label for="{{ form.stock.id_for_label }}" class="form-label fw-medium">Stock</label>
+          {{ form.stock }}
+          {% if form.stock.errors %}<div class="invalid-feedback d-block small">{% for e in form.stock.errors %}{{ e }}{% endfor %}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label for="{{ form.imagen.id_for_label }}" class="form-label fw-medium">Imagen</label>
+          {{ form.imagen }}
+          {% if form.imagen.errors %}<div class="invalid-feedback d-block small">{% for e in form.imagen.errors %}{{ e }}{% endfor %}</div>{% endif %}
+          <div class="mt-3 text-center">
+            <img id="preview" class="img-fluid rounded" style="max-height:220px;object-fit:cover"
+                 src="{% if object and object.imagen %}{{ object.imagen.url }}{% else %}{% static 'img/placeholder.webp' %}{% endif %}"
+                 alt="Vista previa">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer botones -->
+    <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-3 px-4">
+      <a class="btn btn-outline-secondary" href="javascript:history.back()">← Cancelar</a>
+      <div class="d-flex gap-2">
+        {% if object %}
+          <a href="{% url 'panel:prod-preview' object.pk %}" class="btn btn-primary btn-sm">Ver</a>
+        {% endif %}
+        <button type="submit" class="btn btn-secondary btn-sm">Confirmar</button>
+  
+      </div>
+    </div>
+  </form>
+
+</div>
+
+<script>
+  (function(){
+    const input = document.getElementById('{{ form.imagen.id_for_label|default:"" }}');
+    const preview = document.getElementById('preview');
+    if (input && preview) {
+      input.addEventListener('change', (e) => {
+        const [file] = e.target.files || [];
+        if (file) preview.src = URL.createObjectURL(file);
+      });
+    }
+  })();
+</script>
+
+<style>
+  .card { border-radius: 0.75rem; }
+  .btn { font-weight: 500; }
+  .btn-sm { padding: .3rem .8rem; border-radius: .3rem; }
+</style>
 {% endblock %}

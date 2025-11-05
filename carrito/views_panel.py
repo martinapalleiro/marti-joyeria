@@ -13,10 +13,6 @@ from .models import Producto, Orden, OrdenItem
 from .forms_panel import ProductoForm, OrdenForm, OrdenItemForm
 
 
-# =======================
-# MIXINS
-# =======================
-
 class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     """Permite acceso solo a superusuarios."""
     login_url = "/accounts/login/"
@@ -48,10 +44,6 @@ class PanelTitleMixin:
         ctx["is_edit"] = bool(getattr(self, "object", None) and getattr(self.object, "pk", None))
         return ctx
 
-
-# =======================
-# CRUD de PRODUCTOS
-# =======================
 
 class ProdList(SuperuserRequiredMixin, PanelTitleMixin, ListView):
     model = Producto
@@ -102,10 +94,6 @@ class ProdDelete(SuperuserRequiredMixin, PanelTitleMixin, DeleteView):
         messages.warning(self.request, "Producto eliminado.")
         return super().delete(request, *args, **kwargs)
 
-
-# =======================
-# CRUD de ÓRDENES
-# =======================
 
 class OrdenList(SuperuserRequiredMixin, PanelTitleMixin, ListView):
     model = Orden
@@ -160,10 +148,6 @@ class OrdenDelete(SuperuserRequiredMixin, PanelTitleMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-# =======================
-# CRUD de ÍTEMS DE ORDEN
-# =======================
-
 class ItemCreate(SuperuserRequiredMixin, PanelTitleMixin, CreateView):
     model = OrdenItem
     form_class = OrdenItemForm
@@ -197,3 +181,6 @@ class ItemDelete(SuperuserRequiredMixin, PanelTitleMixin, DeleteView):
         messages.warning(self.request, "Ítem eliminado.")
         return reverse("panel:orden-detail", args=[self.object.orden_id])
 
+class ProdPreview(SuperuserRequiredMixin, PanelTitleMixin, DetailView):
+    model = Producto
+    template_name = "panel/prod_preview.html"

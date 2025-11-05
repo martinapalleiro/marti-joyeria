@@ -14,5 +14,5 @@ urlpatterns = [
     path("carrito/add/<slug:slug>/",    CarritoAgregarView.as_view(), name="carrito-agregar"),
     path("carrito/remove/<slug:slug>/", CarritoQuitarView.as_view(),  name="carrito-quitar"),
     path("checkout/",            CheckoutView.as_view(),        name="checkout"),
-    path("success/<int:pk>/",    CheckoutSuccessView.as_view(), name="success"),  # <— cambio
+    path("success/<int:pk>/",    CheckoutSuccessView.as_view(), name="success"), 
 ]

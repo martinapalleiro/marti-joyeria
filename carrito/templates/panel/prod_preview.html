@@ -1,0 +1,50 @@
+{% extends "carrito/base.html" %}
+{% block title %}Vista de producto · {{ object.nombre }}{% endblock %}
+{% block content %}
+
+<div class="row g-4 align-items-start">
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="ratio ratio-1x1">
+        {% if object.imagen %}
+          <img src="{{ object.imagen.url }}" class="img-fluid rounded-start" alt="{{ object.nombre }}" style="object-fit: cover;">
+        {% else %}
+          <div class="d-flex align-items-center justify-content-center bg-light rounded-start">
+            <span class="text-muted">Sin imagen</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h1 class="h4 mb-2">{{ object.nombre }}</h1>
+        <p class="text-muted mb-1"><strong>Slug:</strong> {{ object.slug }}</p>
+        <p class="display-6 fw-semibold mb-3">${{ object.precio }}</p>
+
+        <div class="mb-3">
+          <span class="badge {% if object.stock > 0 %}text-bg-success{% else %}text-bg-secondary{% endif %}">
+            Stock: {{ object.stock }}
+          </span>
+        </div>
+
+        {% if object.descripcion %}
+          <div class="mb-3">
+            <h2 class="h6 text-uppercase text-muted mb-2">Descripción</h2>
+            <p class="mb-0">{{ object.descripcion }}</p>
+          </div>
+        {% endif %}
+
+        <div class="d-flex gap-2">
+          <a class="btn btn-secondary" href="{% url 'panel:prod-update' object.pk %}">Editar</a>
+          <a class="btn btn-outline-danger" href="{% url 'panel:prod-delete' object.pk %}">Eliminar</a>
+          <a class="btn btn-outline-dark" href="{% url 'panel:prod-list' %}">Volver</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

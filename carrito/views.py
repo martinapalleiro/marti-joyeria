@@ -68,7 +68,6 @@ class CarritoQuitarView(View):
         return redirect("carrito:carrito-detalle")
 
 
-# Antes: SuccessView simple. Ahora: mostramos datos de la orden.
 class CheckoutSuccessView(TemplateView):
     template_name = "carrito/success.html"
 
@@ -94,7 +93,6 @@ class CheckoutView(View):
             for p in problemas:
                 messages.warning(request, p)
 
-        # Prefill si está logueado y tenés datos (opcional)
         initial = {}
         form = OrdenForm(initial=initial)
         return render(request, "carrito/checkout.html", {"cart": cart, "form": form})
@@ -107,7 +105,6 @@ class CheckoutView(View):
 
         ok, problemas = cart.validar_stock_actual()
         if not ok:
-            # Ajuste automático para no romper
             ajustes = cart.asegurar_maximo_disponible()
             for p in problemas:
                 messages.error(request, p)
@@ -125,7 +122,7 @@ class CheckoutView(View):
                 # Creamos la orden con los datos del comprador
                 orden: Orden = form.save(commit=False)
                 if request.user.is_authenticated:
-                    orden.usuario = request.user  # opcional
+                    orden.usuario = request.user 
                 orden.save()
 
                 # Crear items

@@ -4,7 +4,6 @@
 <div class="container py-4">
   <h1 class="mb-4 text-center fw-bold"> Nuestros Productos </h1>
 
-  <!-- Grid responsive: 1 col (xs), 2 cols (sm), 3 cols (lg), 4 cols (xl) -->
   <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
     {% for p in object_list %}
     <div class="col">
@@ -45,7 +44,6 @@
     {% endfor %}
   </div>
 
-  {# Paginación (si usás paginate_by en la ListView) #}
   {% if is_paginated %}
   <nav class="mt-4" aria-label="Paginación de productos">
     <ul class="pagination justify-content-center">

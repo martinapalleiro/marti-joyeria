@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from .models import Producto
 
 
-# --- Excepciones específicas del carrito ---
 class CartError(Exception):
     """Error genérico del carrito."""
 
@@ -25,9 +24,7 @@ class Cart:
         # dict: { "product_id": {"qty": int} }
         self.cart = cart
 
-    # --- Helpers internos ---
     def _norm_key(self, product_id):
-        # Fuerza siempre str de un int (lanza ValueError si no es convertible)
         return str(int(product_id))
 
     def _mark_modified(self):
@@ -39,9 +36,8 @@ class Cart:
 
     def _get_current_qty(self, product_id) -> int:
         return int(self.cart.get(self._norm_key(product_id), {}).get("qty", 0))
-
-    # --- API pública ---
-
+    
+    
     def add(self, product_id, qty=1, override=False):
         """
         Agrega o establece cantidad para un producto.

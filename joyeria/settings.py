@@ -9,7 +9,7 @@ MESSAGE_TAGS = {
     messages.INFO: 'info',
     messages.SUCCESS: 'success',
     messages.WARNING: 'warning',
-    messages.ERROR: 'danger',  # 👈 clave: 'error' de Django pasa a 'danger' (Bootstrap)
+    messages.ERROR: 'danger',
 }
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

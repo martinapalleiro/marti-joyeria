@@ -17,7 +17,6 @@ class ProductoForm(forms.ModelForm):
 class OrdenForm(forms.ModelForm):
     class Meta:
         model = Orden
-        # Solo los campos que tenés en tu modelo:
         fields = ["nombre", "apellido", "dni", "direccion", "metodo_pago"]
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
@@ -30,7 +29,6 @@ class OrdenForm(forms.ModelForm):
 class OrdenItemForm(forms.ModelForm):
     class Meta:
         model = OrdenItem
-        # Según tu checkout, el modelo tiene precio (no precio_unitario)
         fields = ["producto", "cantidad", "precio"]
         widgets = {
             "producto": forms.Select(attrs={"class": "form-select"}),

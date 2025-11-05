@@ -114,23 +114,39 @@
 
         <div class="collapse navbar-collapse" id="mainNav">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2 mt-3 mt-lg-0">
-            <li class="nav-item">
-              <a class="btn btn-outline-light btn-sm ms-lg-2 position-relative"
-                 href="{% url 'carrito:carrito-detalle' %}">
-                🛒 Carrito
-                {% if cart and cart|length %}
-                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-warning cart-badge">
-                    {{ cart|length }}
-                  </span>
-                {% endif %}
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-outline-light btn-sm ms-lg-2" href="/admin/">
-                🛠️ Admin
-              </a>
-            </li>
-          </ul>
+  <li class="nav-item">
+    <a class="btn btn-outline-light btn-sm ms-lg-2 position-relative"
+       href="{% url 'carrito:carrito-detalle' %}">
+      🛒 Carrito
+      {% if cart and cart|length %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-warning cart-badge">
+          {{ cart|length }}
+        </span>
+      {% endif %}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="btn btn-outline-light btn-sm ms-lg-2" href="/admin/">
+      🛠️ Admin
+    </a>
+  </li>
+  {% if request.user.is_authenticated and request.user.is_superuser %}
+  <li class="nav-item">
+    <a class="btn btn-outline-light btn-sm ms-lg-2" href="{% url 'panel:prod-list' %}">
+      📦 Panel
+    </a>
+  </li>
+{% elif not request.user.is_authenticated %}
+  <li class="nav-item">
+    <a class="btn btn-outline-light btn-sm ms-lg-2"
+       href="{% url 'login' %}?next={% url 'panel:prod-list' %}">
+      🔐 Ingresar
+    </a>
+  </li>
+{% endif %}
+
+</ul>
+
         </div>
       </div>
     </nav>

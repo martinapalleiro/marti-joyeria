@@ -1,0 +1,11 @@
+{# templates/panel/confirm_delete.html #}
+{% extends "carrito/base.html" %}
+{% block content %}
+<h1 class="h4 mb-3">Eliminar {{ object }}</h1>
+<div class="alert alert-warning">¿Seguro que querés eliminar esto? No se puede deshacer.</div>
+<form method="post">
+  {% csrf_token %}
+  <a class="btn btn-outline-secondary" href="javascript:history.back()">Volver</a>
+  <button class="btn btn-danger">Eliminar</button>
+</form>
+{% endblock %}

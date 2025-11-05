@@ -1,0 +1,42 @@
+{% extends "carrito/base.html" %}
+{% block title %}Iniciar sesión · Marti Joyería{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:70vh">
+  <div class="card border-0 shadow-lg" style="max-width: 420px; width: 100%; border-radius:1rem;">
+    <div class="card-body p-4">
+      <h1 class="h4 text-center mb-4 fw-bold">🔐 Iniciar sesión</h1>
+
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          Usuario o contraseña incorrectos. Intentá de nuevo.
+        </div>
+      {% endif %}
+
+      <form method="post" class="mb-3" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+        <div class="mb-3">
+          <label class="form-label" for="{{ form.username.id_for_label }}">Usuario</label>
+          {{ form.username }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="{{ form.password.id_for_label }}">Contraseña</label>
+          {{ form.password }}
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100 py-2 fw-semibold">
+          Ingresar
+        </button>
+      </form>
+
+      <div class="text-center small text-muted">
+        ¿Olvidaste tu contraseña?
+        <a href="{% url 'password_reset' %}" class="link-secondary">Recuperarla</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

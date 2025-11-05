@@ -1,0 +1,49 @@
+{# templates/panel/orden_list.html #}
+{% extends "carrito/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Órdenes</h1>
+  <a href="{% url 'panel:orden-create' %}" class="btn btn-primary">Nueva orden</a>
+</div>
+
+<form class="input-group mb-3">
+  <input type="search" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Buscar por #, nombre, apellido o email">
+  <button class="btn btn-outline-secondary">Buscar</button>
+</form>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th><th>Cliente</th><th>Email</th><th>Estado</th><th></th>
+        </tr>
+      <thead class="table-light">
+  <tr>
+    <th>#</th><th>Cliente</th><th>DNI</th><th>Método de pago</th><th></th>
+  </tr>
+</thead>
+<tbody>
+  {% for o in object_list %}
+  <tr>
+    <td>{{ o.id }}</td>
+    <td>{{ o.nombre }} {{ o.apellido }}</td>
+    <td>{{ o.dni }}</td>
+    <td>{{ o.metodo_pago }}</td>
+    <td class="text-end">
+      <a class="btn btn-sm btn-outline-primary" href="{% url 'panel:orden-detail' o.pk %}">Ver</a>
+      <a class="btn btn-sm btn-secondary" href="{% url 'panel:orden-update' o.pk %}">Editar</a>
+      <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:orden-delete' o.pk %}">Eliminar</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="5" class="text-center text-muted py-4">Sin órdenes</td></tr>
+  {% endfor %}
+</tbody>
+
+    </table>
+  </div>
+</div>
+
+{% include "partials/pagination.html" %}
+{% endblock %}

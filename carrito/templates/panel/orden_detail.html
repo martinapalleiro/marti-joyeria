@@ -1,0 +1,64 @@
+{# templates/panel/orden_detail.html #}
+{% extends "carrito/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Orden #{{ object.id }}</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-secondary" href="{% url 'panel:orden-update' object.pk %}">Editar</a>
+    <a class="btn btn-outline-danger" href="{% url 'panel:orden-delete' object.pk %}">Eliminar</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h2 class="h6 text-uppercase text-muted mb-3">Cliente</h2>
+        <p class="mb-1"><strong>Nombre:</strong> {{ object.nombre }} {{ object.apellido }}</p>
+        <p class="mb-1"><strong>Email:</strong> {{ object.email }}</p>
+        <p class="mb-1"><strong>Dirección:</strong> {{ object.direccion }}, {{ object.ciudad }}, {{ object.provincia }} ({{ object.cp }})</p>
+        <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-secondary">{{ object.estado }}</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h6 text-uppercase text-muted mb-0">Ítems</h2>
+      <a class="btn btn-sm btn-primary" href="{% url 'panel:item-create' object.pk %}">Agregar ítem</a>
+    </div>
+    <div class="card border-0 shadow-sm">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th></th>
+            </tr>
+          <thead class="table-light">
+  <tr>
+    <th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th></th>
+  </tr>
+</thead>
+<tbody>
+  {% for it in object.ordenitem_set.all %}
+  <tr>
+    <td>{{ it.producto.nombre }}</td>
+    <td>{{ it.cantidad }}</td>
+    <td>${{ it.precio }}</td>
+    <td>${{ it.cantidad|floatformat:0 }} × {{ it.precio }}</td>
+    <td class="text-end">
+      <a class="btn btn-sm btn-secondary" href="{% url 'panel:item-update' it.pk %}">Editar</a>
+      <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:item-delete' it.pk %}">Eliminar</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="5" class="text-center text-muted py-4">Sin ítems</td></tr>
+  {% endfor %}
+</tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
